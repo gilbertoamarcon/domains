@@ -1,0 +1,28 @@
+domain game {
+
+	requirements = {
+		reward-deterministic
+	};
+
+	types {
+		pos : object;
+	}; 
+
+	pvariables {
+		left(pos,pos) : { non-fluent, bool, default = false };
+		right(pos,pos) : { non-fluent, bool, default = false };
+		value(pos) : { non-fluent, int, default = 0 };
+		at(pos) : { state-fluent, bool, default = false };
+		a : { action-fluent, bool, default = false };
+	};
+
+	cpfs {
+		at'(?x) = if(
+			( a ^ exists_{?y : pos} ( at(?y) ^ left(?x,?y) )) | 
+			(~a ^ exists_{?y : pos} ( at(?y) ^ right(?x,?y) ))
+		) then KronDelta(true) else KronDelta(false);
+	};
+
+	reward = sum_{?x : pos} value(?x)*at(?x);
+
+}
