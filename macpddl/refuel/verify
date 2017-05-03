@@ -1,0 +1,221 @@
+Type-checking open_tank
+...action passes type checking.
+Type-checking close_tank
+...action passes type checking.
+Type-checking refuel_slow
+...action passes type checking.
+Type-checking refuel_fast
+...action passes type checking.
+Checking plan: /home/gil/dev/domains/macpddl/refuel//solution
+Plan to validate:
+
+Plan size: 14
+0:
+(open_tank arm0 t0) - start
+ 
+2:
+(open_tank arm0 t0) - end
+ 
+2.001:
+(refuel_fast arm2 t0) - start
+ 
+2.005:
+Invariant for (refuel_fast arm2 t0)
+ 
+2.005:
+Update of continuously changing Primitive Numerical Expressions
+ 
+2.005:
+(refuel_fast arm0 t0) - start
+ 
+3.001:
+Invariant for (refuel_fast arm2 t0)
+Invariant for (refuel_fast arm0 t0)
+ 
+3.001:
+Update of continuously changing Primitive Numerical Expressions
+ 
+3.001:
+(refuel_fast arm2 t0) - end
+ 
+3.002:
+Invariant for (refuel_fast arm0 t0)
+ 
+3.002:
+Update of continuously changing Primitive Numerical Expressions
+ 
+3.002:
+(refuel_slow arm1 t0) - start
+ 
+3.004:
+Invariant for (refuel_fast arm0 t0)
+Invariant for (refuel_slow arm1 t0)
+ 
+3.004:
+Update of continuously changing Primitive Numerical Expressions
+ 
+3.004:
+(refuel_slow arm2 t0) - start
+ 
+3.005:
+Invariant for (refuel_fast arm0 t0)
+Invariant for (refuel_slow arm1 t0)
+Invariant for (refuel_slow arm2 t0)
+ 
+3.005:
+Update of continuously changing Primitive Numerical Expressions
+ 
+3.005:
+(refuel_fast arm0 t0) - end
+ 
+4.002:
+Invariant for (refuel_slow arm1 t0)
+Invariant for (refuel_slow arm2 t0)
+ 
+4.002:
+Update of continuously changing Primitive Numerical Expressions
+ 
+4.002:
+(refuel_slow arm1 t0) - end
+ 
+4.003:
+Invariant for (refuel_slow arm2 t0)
+ 
+4.003:
+Update of continuously changing Primitive Numerical Expressions
+ 
+4.003:
+(refuel_slow arm0 t0) - start
+ 
+4.004:
+Invariant for (refuel_slow arm2 t0)
+Invariant for (refuel_slow arm0 t0)
+ 
+4.004:
+Update of continuously changing Primitive Numerical Expressions
+ 
+4.004:
+(refuel_slow arm2 t0) - end
+ 
+5.003:
+Invariant for (refuel_slow arm0 t0)
+ 
+5.003:
+Update of continuously changing Primitive Numerical Expressions
+ 
+5.003:
+(refuel_slow arm0 t0) - end
+ 
+5.004:
+(close_tank arm0 t0) - start
+ 
+5.504:
+(close_tank arm0 t0) - end
+ 
+
+Plan Validation details
+-----------------------
+
+Checking next happening (time 0)
+Deleting (free arm0)
+Deleting (closed t0)
+
+Checking next happening (time 2)
+Adding (open t0)
+Adding (free arm0)
+
+Checking next happening (time 2.001)
+Deleting (free arm2)
+
+Checking next happening (time 2.005)
+
+Checking next happening (time 2.005)
+Updating (fuel_amount t0) (0) by 0.08 assignment
+
+Checking next happening (time 2.005)
+Deleting (free arm0)
+
+Checking next happening (time 3.001)
+
+Checking next happening (time 3.001)
+Updating (fuel_amount t0) (0.08) by 39.92 assignment
+
+Checking next happening (time 3.001)
+Adding (free arm2)
+
+Checking next happening (time 3.002)
+
+Checking next happening (time 3.002)
+Updating (fuel_amount t0) (39.92) by 39.94 assignment
+
+Checking next happening (time 3.002)
+Deleting (free arm1)
+
+Checking next happening (time 3.004)
+
+Checking next happening (time 3.004)
+Updating (fuel_amount t0) (39.94) by 39.984 assignment
+
+Checking next happening (time 3.004)
+Deleting (free arm2)
+
+Checking next happening (time 3.005)
+
+Checking next happening (time 3.005)
+Updating (fuel_amount t0) (39.984) by 40.008 assignment
+
+Checking next happening (time 3.005)
+Adding (free arm0)
+
+Checking next happening (time 4.002)
+
+Checking next happening (time 4.002)
+Updating (fuel_amount t0) (40.008) by 43.996 assignment
+
+Checking next happening (time 4.002)
+Adding (free arm1)
+
+Checking next happening (time 4.003)
+
+Checking next happening (time 4.003)
+Updating (fuel_amount t0) (43.996) by 43.998 assignment
+
+Checking next happening (time 4.003)
+Deleting (free arm0)
+
+Checking next happening (time 4.004)
+
+Checking next happening (time 4.004)
+Updating (fuel_amount t0) (43.998) by 44.002 assignment
+
+Checking next happening (time 4.004)
+Adding (free arm2)
+
+Checking next happening (time 5.003)
+
+Checking next happening (time 5.003)
+Updating (fuel_amount t0) (44.002) by 46 assignment
+
+Checking next happening (time 5.003)
+Adding (free arm0)
+
+Checking next happening (time 5.004)
+Deleting (free arm0)
+Deleting (open t0)
+
+Checking next happening (time 5.504)
+Adding (closed t0)
+Adding (free arm0)
+Plan executed successfully - checking goal
+Plan valid
+Final value: 5.504
+(free arm0)
+(closed t0)
+(free arm2)
+(free arm1)
+(fuel_amount t0) = 46
+
+Successful plans:
+Value: 5.504
+ /home/gil/dev/domains/macpddl/refuel//solution 
+

@@ -1,0 +1,656 @@
+(define (domain blocksworld)
+  (:requirements :fluents :durative-actions :typing)
+  (:agents
+    arm - agent
+  )
+  (:types
+    block grip_type - object
+    single_block double_block - block
+  )
+  (:predicates
+    (has_gripper_type ?a - arm ?g - grip_type)
+    (empty ?a - arm)
+
+    (has_connector_type ?b - block ?g - grip_type)
+
+    (clear ?b - block)
+    (on_block ?b_1 - block ?b_2 - block)
+    (on_table ?b - block)
+    (holding_single ?a - arm ?b - single_block)
+    (holding_double ?a_1 - arm ?a_2 - arm ?b - double_block)
+  )
+  (:functions
+    (block_height ?b - block)
+    (arm_height ?a - arm)
+    (arm_id ?a - arm)
+    (max_on_table)
+    (num_on_table)
+  )
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; pickup single block on block ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:durative-action pickup_single_block_on_block_arm_ge
+    :executor (?a - arm)
+    :parameters (?b_1 - single_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (block_height ?b_1) (arm_height ?a)) 1))
+    :condition
+      (and
+        (at start (>= (block_height ?b_1) (arm_height ?a)))
+        (at start (empty ?a))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (has_gripper_type ?a ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_single ?a ?b_1))
+        (at end (assign (arm_height ?a) (block_height ?b_1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+
+  (:durative-action pickup_single_block_on_block_arm_lt
+    :executor (?a - arm)
+    :parameters (?b_1 - single_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (arm_height ?a) (block_height ?b_1)) 1))
+    :condition
+      (and
+        (at start (< (block_height ?b_1) (arm_height ?a)))
+        (at start (empty ?a))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (has_gripper_type ?a ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_single ?a ?b_1))
+        (at end (assign (arm_height ?a) (block_height ?b_1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; pickup double block ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;   a_1
+  ;   a_2
+  ; 
+  ;   b_1
+  ;   b_2
+  (:durative-action pickup_double_block_on_block_1_1
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (arm_height ?a_1) (block_height ?b_1)) 2))
+    :condition
+      (and
+        (at start (>= (arm_height ?a_1) (arm_height ?a_2)))
+        (at start (> (arm_height ?a_2) (block_height ?b_1)))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+  (:durative-action pickup_double_block_on_block_1_2
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (arm_height ?a_2) (block_height ?b_1)) 2))
+    :condition
+      (and
+        (at start (>= (arm_height ?a_2) (arm_height ?a_1)))
+        (at start (> (arm_height ?a_1) (block_height ?b_1)))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+
+  ;   a_1
+  ; 
+  ;
+  ;   b_1 a_2
+  ;   b_2
+  (:durative-action pickup_double_block_on_block_2_1
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (arm_height ?a_1) (block_height ?b_1)) 2))
+    :condition
+      (and
+        (at start (>= (arm_height ?a_1) (block_height ?b_1)))
+        (at start (= (arm_height ?a_2) (block_height ?b_1)))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+  (:durative-action pickup_double_block_on_block_2_2
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (arm_height ?a_2) (block_height ?b_1)) 2))
+    :condition
+      (and
+        (at start (>= (arm_height ?a_2) (block_height ?b_1)))
+        (at start (= (arm_height ?a_1) (block_height ?b_1)))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+
+  ;   a_1
+  ;
+  ;
+  ;   b_1
+  ;   b_2
+  ;   a_2
+  (:durative-action pickup_double_block_on_block_3_1
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (arm_height ?a_1) (block_height ?b_1)) 2))
+    :condition
+      (and
+        (at start (> (arm_height ?a_1) (block_height ?b_1)))
+        (at start (< (arm_height ?a_2) (block_height ?b_1)))
+        (at start (>= (- (arm_height ?a_1) (block_height ?b_1)) (- (block_height ?b_1) (arm_height ?a_2))))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+  (:durative-action pickup_double_block_on_block_3_lt
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (block_height ?b_1) (arm_height ?a_2)) 2))
+    :condition
+      (and
+        (at start (> (arm_height ?a_2) (block_height ?b_1)))
+        (at start (< (arm_height ?a_1) (block_height ?b_1)))
+        (at start (>= (- (arm_height ?a_2) (block_height ?b_1)) (- (block_height ?b_1) (arm_height ?a_1))))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+
+  ;   a_2
+  ;   b_1
+  ;   b_2
+  ;
+  ;   a_1
+  (:durative-action pickup_double_block_on_block_4_1
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (block_height ?b_1) (arm_height ?a_1)) 2))
+    :condition
+      (and
+        (at start (< (arm_height ?a_1) (block_height ?b_1)))
+        (at start (>= (arm_height ?a_2) (block_height ?b_1)))
+        (at start (>= (- (block_height ?b_1) (arm_height ?a_1)) (- (arm_height ?a_2) (block_height ?b_1))))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+  (:durative-action pickup_double_block_on_block_4_2
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (block_height ?b_1) (arm_height ?a_2)) 2))
+    :condition
+      (and
+        (at start (< (arm_height ?a_2) (block_height ?b_1)))
+        (at start (>= (arm_height ?a_1) (block_height ?b_1)))
+        (at start (>= (- (block_height ?b_1) (arm_height ?a_2)) (- (arm_height ?a_1) (block_height ?b_1))))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+
+  ;   b_1
+  ;   b_2
+  ;   a_2
+  ;
+  ;   a_1
+  (:durative-action pickup_double_block_on_block_5_1
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (block_height ?b_1) (arm_height ?a_1)) 2))
+    :condition
+      (and
+        (at start (<= (arm_height ?a_1) (arm_height ?a_2)))
+        (at start (< (arm_height ?a_2) (block_height ?b_1)))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+  (:durative-action pickup_double_block_on_block_5_2
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block ?g - grip_type)
+    :duration (= ?duration (+ (- (block_height ?b_1) (arm_height ?a_2)) 2))
+    :condition
+      (and
+        (at start (<= (arm_height ?a_1) (arm_height ?a_2)))
+        (at start (< (arm_height ?a_1) (block_height ?b_1)))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (on_block ?b_1 ?b_2))
+        (at start (clear ?b_1))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b_1 ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_block ?b_1 ?b_2)))
+        (at start (not (clear ?b_1)))
+        (at end (clear ?b_2))
+        (at end (holding_double ?a_1 ?a_2 ?b_1))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) -1))
+      )
+  )
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; drop single block on block ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:durative-action place_single_block_on_block_ge
+    :executor (?a - arm)
+    :parameters (?b_1 - single_block ?b_2 - block)
+    :duration (= ?duration (+ (- (+ (block_height ?b_2) 1) (arm_height ?a)) 1))
+    :condition
+      (and
+        (at start (>= (+ (block_height ?b_2) 1) (arm_height ?a)))
+        (at start (holding_single ?a ?b_1))
+        (at start (clear ?b_2))
+      )
+    :effect
+      (and
+        (at start (not (clear ?b_2)))
+        (at start (not (holding_single ?a ?b_1)))
+        (at end (on_block ?b_1 ?b_2))
+        (at end (clear ?b_1))
+        (at end (empty ?a))
+        (at end (assign (arm_height ?a) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) (+ (block_height ?b_2) 1)))
+      )
+  )
+
+  (:durative-action place_single_block_on_block_lt
+    :executor (?a - arm)
+    :parameters (?b_1 - single_block ?b_2 - block)
+    :duration (= ?duration (+ (- (arm_height ?a) (+ (block_height ?b_2) 1)) 1))
+    :condition
+      (and
+        (at start (< (+ (block_height ?b_2) 1) (arm_height ?a)))
+        (at start (holding_single ?a ?b_1))
+        (at start (clear ?b_2))
+      )
+    :effect
+      (and
+        (at start (not (clear ?b_2)))
+        (at start (not (holding_single ?a ?b_1)))
+        (at end (on_block ?b_1 ?b_2))
+        (at end (clear ?b_1))
+        (at end (empty ?a))
+        (at end (assign (arm_height ?a) (+ (block_height ?b_2) 1)))
+        (at end (assign (block_height ?b_1) (+ (block_height ?b_2) 1)))
+      )
+  )
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; drop double block on block ;; 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:durative-action place_double_block_on_block_ge
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block)
+    :duration (= ?duration (+ (- (+ (block_height ?b_2) 1) (arm_height ?a_1)) 2))
+    :condition
+      (and
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (>= (+ (block_height ?b_2) 1) (arm_height ?a_1)))
+        (at start (holding_double ?a_1 ?a_2 ?b_1))
+        (at start (clear ?b_2))
+      )
+    :effect
+      (and
+        (at start (not (clear ?b_2)))
+        (at start (not (holding_double ?a_1 ?a_2 ?b_1)))
+        (at end (on_block ?b_1 ?b_2))
+        (at end (clear ?b_1))
+        (at end (empty ?a_1))
+        (at end (empty ?a_2))
+        (at end (assign (block_height ?b_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+      )
+  )
+  (:durative-action place_double_block_on_block_lt
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b_1 - double_block ?b_2 - block)
+    :duration (= ?duration (+ (- (arm_height ?a_1) (+ (block_height ?b_2) 1)) 2))
+    :condition
+      (and
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (< (+ (block_height ?b_2) 1) (arm_height ?a_1)))
+        (at start (holding_double ?a_1 ?a_2 ?b_1))
+        (at start (clear ?b_2))
+      )
+    :effect
+      (and
+        (at start (not (clear ?b_2)))
+        (at start (not (holding_double ?a_1 ?a_2 ?b_1)))
+        (at end (on_block ?b_1 ?b_2))
+        (at end (clear ?b_1))
+        (at end (empty ?a_1))
+        (at end (empty ?a_2))
+        (at end (assign (block_height ?b_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_1) (+ (block_height ?b_2) 1)))
+        (at end (assign (arm_height ?a_2) (+ (block_height ?b_2) 1)))
+      )
+  )
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; pickup double block on table ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:durative-action pickup_double_block_on_table_ge
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b - double_block ?g - grip_type)
+    :duration (= ?duration (+ (arm_height ?a_1) 2))
+    :condition
+      (and
+        (at start (>= (arm_height ?a_1) (arm_height ?a_2)))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (clear ?b))
+        (at start (on_table ?b))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_table ?b)))
+        (at start (not (clear ?b)))
+        (at end (holding_double ?a_1 ?a_2 ?b))
+        (at end (decrease (num_on_table) 1))
+        (at end (assign (arm_height ?a_1) 0))
+        (at end (assign (arm_height ?a_2) 0))
+        (at end (assign (block_height ?b) -1))
+      )
+  )
+  (:durative-action pickup_double_block_on_table_lt
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b - double_block ?g - grip_type)
+    :duration (= ?duration (+ (arm_height ?a_2) 2))
+    :condition
+      (and
+        (at start (< (arm_height ?a_1) (arm_height ?a_2)))
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (clear ?b))
+        (at start (on_table ?b))
+        (at start (empty ?a_1))
+        (at start (empty ?a_2))
+        (at start (has_gripper_type ?a_1 ?g))
+        (at start (has_gripper_type ?a_2 ?g))
+        (at start (has_connector_type ?b ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a_1)))
+        (at start (not (empty ?a_2)))
+        (at start (not (on_table ?b)))
+        (at start (not (clear ?b)))
+        (at end (holding_double ?a_1 ?a_2 ?b))
+        (at end (decrease (num_on_table) 1))
+        (at end (assign (arm_height ?a_1) 0))
+        (at end (assign (arm_height ?a_2) 0))
+        (at end (assign (block_height ?b) -1))
+      )
+  )
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; pickup block on table ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:durative-action pickup_single_block_on_table
+    :executor (?a - arm)
+    :parameters (?b - single_block ?g - grip_type)
+    :duration (= ?duration (+ (- (arm_height ?a) (block_height ?b)) 1))
+    :condition
+      (and
+        (at start (empty ?a))
+        (at start (clear ?b))
+        (at start (on_table ?b))
+        (at start (has_gripper_type ?a ?g))
+        (at start (has_connector_type ?b ?g))
+      )
+    :effect
+      (and
+        (at start (not (empty ?a)))
+        (at start (not (clear ?b)))
+        (at start (not (on_table ?b)))
+        (at end (holding_single ?a ?b))
+        (at end (decrease (num_on_table) 1))
+        (at end (assign (arm_height ?a) 0))
+        (at end (assign (block_height ?b) -1))
+      )
+  )
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; place block on table ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (:durative-action place_single_block_on_table
+    :executor (?a - arm)
+    :parameters (?b - single_block)
+    :duration (= ?duration (+ (arm_height ?a) 1))
+    :condition
+      (and
+        (at start (holding_single ?a ?b))
+        (at start (< (num_on_table) (max_on_table)))
+      )
+    :effect
+      (and
+        (at start (not (holding_single ?a ?b)))
+        (at start (increase (num_on_table) 1))
+        (at end (on_table ?b))
+        (at end (clear ?b))
+        (at end (empty ?a))
+        (at end (assign (arm_height ?a) 0))
+        (at end (assign (block_height ?b) 0))
+      )
+  )
+
+  (:durative-action place_double_block_on_table
+    :executor (?a_1 - arm ?a_2 - arm)
+    :parameters (?b - double_block)
+    :duration (= ?duration (+ (arm_height ?a_1) 2))
+    :condition
+      (and
+        (at start (> (arm_id ?a_1) (arm_id ?a_2)))
+        (at start (holding_double ?a_1 ?a_2 ?b))
+        (at start (< (num_on_table) (max_on_table)))
+      )
+    :effect
+      (and
+        (at start (not (holding_double ?a_1 ?a_2 ?b)))
+        (at start (increase (num_on_table) 1))
+        (at end (on_table ?b))
+        (at end (clear ?b))
+        (at end (empty ?a_1))
+        (at end (empty ?a_2))
+        (at end (assign (arm_height ?a_1) 0))
+        (at end (assign (arm_height ?a_2) 0))
+        (at end (assign (block_height ?b) 0))
+      )
+  )
+)

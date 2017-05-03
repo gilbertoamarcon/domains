@@ -1,0 +1,3 @@
+0.0:	|(generate gen)0_sta| [1000.0]
+990.0:	|(refuel gen tank1)1_sta| [10.0]
+Goal at [1000.0]

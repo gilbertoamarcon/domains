@@ -1,0 +1,11 @@
+; Time 0.00
+0.000: (pickup_block_on_block arm0 block1 block0 magnetic)  [1.000]
+1.001: (place_block_on_table arm0 block1)  [2.000]
+3.002: (pickup_block_on_table arm0 block0 magnetic)  [1.000]
+4.003: (place_block_on_block arm0 block0 block1)  [1.000]
+4.004: (pickup_block_on_block arm1 block4 block3 encompass)  [1.000]
+5.005: (place_block_on_table arm1 block4)  [2.000]
+7.006: (pickup_block_on_block arm1 block3 block2 encompass)  [1.000]
+8.007: (place_block_on_block arm1 block3 block4)  [1.000]
+9.008: (pickup_block_on_table arm1 block2 encompass)  [1.000]
+10.009: (place_block_on_block arm1 block2 block3)  [1.000]

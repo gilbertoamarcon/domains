@@ -1,0 +1,6 @@
+0.0:	|(move_up r)0_sta| [1.0]
+3.0:	|(move_up r)2_sta| [1.0]
+6.0:	|(move_right r)4_sta| [1.0]
+9.0:	|(move_right r)6_sta| [1.0]
+12.0:	|(move_right r)8_sta| [1.0]
+Goal at [13.0]
